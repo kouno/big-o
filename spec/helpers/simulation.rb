@@ -2,11 +2,10 @@ module Helpers
   ONE_KILO_OCTET = 'a' * 1024
 
   def simulate_utime_processing(seconds)
-    Timeout::timeout(seconds) do
-      while true; 1 ** 100 end
-    end
-  rescue Timeout::Error => e
-    # mute error.
+    t0 = Process.times
+    begin
+      t1 = Process.times
+    end while (t1.utime - t0.utime) < seconds
   end
 
   def simulate_memory_space(ko)

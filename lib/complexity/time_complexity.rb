@@ -2,17 +2,22 @@ module Complexity
   class TimeComplexity
     include ComplexityBase
 
+    def initialize
+      @error_pct = 0.1
+      super
+    end
+
+    def process
+      @scale ||= get_scale
+      raise InstantaneousExecutionError.new unless @scale > 0
+      super
+    end
+
     def measure(*args, &b)
-      t0, r0 = Process.times, Time.now
+      t0 = Process.times
       b.call(*args)
-      t1, r1 = Process.times, Time.now
-      tms = Benchmark::Tms.new(t1.utime  - t0.utime,
-                               t1.stime  - t0.stime,
-                               t1.cutime - t0.cutime,
-                               t1.cstime - t0.cstime,
-                               r1.to_f   - r0.to_f,
-                               '')
-      tms.utime
+      t1 = Process.times
+      t1.utime - t0.utime
     end
   end
 end

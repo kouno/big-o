@@ -9,6 +9,7 @@ module Complexity
       pid = Process.fork do
         memory_measures << `ps -o rss= -p #{Process.pid}`.to_i
         b.call(*args)
+        memory_measures << `ps -o rss= -p #{Process.pid}`.to_i
         exit
       end
 

@@ -47,4 +47,8 @@ describe SpaceComplexity do
       @space_complexity.should_not match_complexity_level 'O(1)', lambda { |_| 1 }
     end
   end
+
+  describe 'very small memory usage' do
+    it 'should throw an error when memory can\'t be measured'
+  end
 end

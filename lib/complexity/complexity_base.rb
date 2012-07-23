@@ -9,6 +9,7 @@ module Complexity
     attr_accessor :result_set
     attr_accessor :approximation
     attr_accessor :scale
+    attr_accessor :error_pct
 
     def initialize
       @timeout                 = 10
@@ -16,6 +17,7 @@ module Complexity
       @result                  = nil
       @minimum_result_set_size = 4
       @approximation           = 0.05
+      @error_pct               = 0.05
     end
 
     def process
@@ -50,10 +52,16 @@ module Complexity
         raise SmallResultSetError.new(@minimum_result_set_size)
       end
 
+      allowed_inconsistencies = (expected_complexity.size * @error_pct).floor
       expected_complexity.each do |n, level|
+        next if n == 1
         estimated_complexity  = @scale * level
         estimated_complexity += estimated_complexity * @approximation
-        if real_complexity[n] > estimated_complexity
+        if estimated_complexity <= real_complexity[n]
+          if allowed_inconsistencies > 0
+            allowed_inconsistencies -= 1
+            next
+          end
           @result = false
           break
         end
