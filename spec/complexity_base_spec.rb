@@ -18,7 +18,7 @@ describe ComplexityBase do
     end
 
     it 'should have a timeout of 10 seconds' do
-      @fn_complexity.timeout.should == 10
+      @fn_complexity.options[:timeout].should == 10
     end
 
     it 'should have no result defined' do
@@ -26,7 +26,7 @@ describe ComplexityBase do
     end
 
     it 'should have an approximation of 5%' do
-      @fn_complexity.approximation.should == 0.05
+      @fn_complexity.options[:approximation].should == 0.05
     end
 
     it 'should refuse to process less than 4 values when processing a function' do
@@ -41,6 +41,18 @@ describe ComplexityBase do
       lambda {
         @fn_complexity.examine_result_set(real_complexity, expected_complexity)
       }.should raise_error(SmallResultSetError)
+    end
+  end
+
+  context 'with overwritten values' do
+    before :each do
+      @fn_complexity = FunctionComplexity.new({ :timeout => 1,
+                                                :approximation => 0.1 })
+    end
+
+    it 'should have the configured values' do
+      @fn_complexity.options[:timeout].should == 1
+      @fn_complexity.options[:approximation].should == 0.1
     end
   end
 end

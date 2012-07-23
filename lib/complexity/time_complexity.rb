@@ -2,9 +2,9 @@ module Complexity
   class TimeComplexity
     include ComplexityBase
 
-    def initialize
-      @error_pct = 0.1
-      super
+    def initialize(options = {})
+      options = { :error_pct => 0.1 }.merge(options)
+      super(options)
     end
 
     def process

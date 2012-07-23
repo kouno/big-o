@@ -1,6 +1,6 @@
 RSpec::Matchers.define :match_complexity_level do |o_notation, complexity_level|
   match do |complexity|
-    complexity.level = complexity_level
+    complexity.options[:level] = complexity_level
     complexity.process
   end
 
