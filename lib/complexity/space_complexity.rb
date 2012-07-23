@@ -1,7 +1,13 @@
 module Complexity
+  # Measure space complexity.
   class SpaceComplexity
     include ComplexityBase
 
+    # Measures the memory space that <code>fn</code> is using.
+    #
+    # @param [Array] args arguments which the given block should take
+    # @yield function which should be measured (fn)
+    # @return [Float] measurement
     def measure(*args, &b)
       memory_measures = []
       GC.disable
