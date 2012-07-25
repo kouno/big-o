@@ -35,6 +35,31 @@ space_complexity = BigO::SpaceComplexity({
 })
 ```
 
+If you are using RSpec, there is a matcher already defined for matching a complexity level:
+
+```ruby
+require 'big-o-matchers'
+
+describe 'do_something_time_consuming' do
+  before :each do
+    @time_complexity = BigO::TimeComplexity({
+      :fn    => lambda { |n| do_something_time_consuming(n) }
+    })
+  end
+
+  it 'should have a complexity of O(n)' do
+    @time_complexity.should match_complexity_level 'O(n)', lambda { |n| n }
+  end
+
+  it 'should not have a complexity of O(1)' do
+    @time_complexity.should match_complexity_level 'O(1)', lambda { |_| 1 }
+  end
+end
+```
+
+The string used as the first parameter (e.g. `'O(n)'`) is used to describe the lambda given as the
+second parameter.
+
 ## Reference
 
 You may want to read more on the subject by reading:
