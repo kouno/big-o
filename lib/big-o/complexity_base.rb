@@ -1,4 +1,4 @@
-module Complexity
+module BigO
   # ComplexityBase regroup every process common to the benchmarking of a function.
   module ComplexityBase
 

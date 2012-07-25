@@ -1,4 +1,4 @@
-module Complexity
+module BigO
   # Measure time complexity.
   class TimeComplexity
     include ComplexityBase

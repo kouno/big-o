@@ -1,4 +1,4 @@
-module Complexity
+module BigO
   # The function could not be run more than X times (where X is a configurable value).
   #
   # This exception happens if the function is too slow to run, or if the timeout is too short.

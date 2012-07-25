@@ -1,4 +1,4 @@
-module Complexity
+module BigO
   # Measure space complexity.
   class SpaceComplexity
     include ComplexityBase

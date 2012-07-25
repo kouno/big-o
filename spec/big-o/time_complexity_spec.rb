@@ -1,5 +1,5 @@
 require 'spec_helper'
-include Complexity
+include BigO
 
 describe TimeComplexity do
   before :each do

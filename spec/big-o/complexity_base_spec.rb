@@ -1,5 +1,5 @@
 require 'spec_helper'
-include Complexity
+include BigO
 
 describe ComplexityBase do
   before :all do

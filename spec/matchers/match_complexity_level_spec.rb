@@ -1,5 +1,5 @@
 require 'spec_helper'
-include Complexity
+include BigO
 
 describe 'match_complexity_level matcher' do
   before :each do
