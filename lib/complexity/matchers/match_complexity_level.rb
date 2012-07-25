@@ -13,7 +13,7 @@ RSpec::Matchers.define :match_complexity_level do |o_notation, complexity_level|
         "got scale: #{complexity.scale} min: #{result_set[0][1]} " +
         "max: #{result_set[-1][1]} " +
         "avg: #{total / result_set.size} " +
-        "total values: #{result_set.size} on #{complexity.range}"
+        "total values: #{result_set.size} on #{complexity.options[:range]}"
   end
 
   failure_message_for_should_not do |complexity|
@@ -23,7 +23,7 @@ RSpec::Matchers.define :match_complexity_level do |o_notation, complexity_level|
         "got scale: #{complexity.scale} min: #{result_set[0][1]} " +
         "max: #{result_set[-1][1]} " +
         "avg: #{total / result_set.size} " +
-        "total values: #{result_set.size} on #{complexity.range}"
+        "total values: #{result_set.size} on #{complexity.options[:range]}"
   end
 
   description do
