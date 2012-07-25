@@ -9,11 +9,23 @@ Calculation of memory space is done via `ps`, and therefore, doesn't work on Win
 
 This gem has been tested on Mac OS X, using Ruby 1.9.3.
 
+## Install
+
+Installation is made through RubyGem:
+
+```
+gem install big-o
+```
+
 ## Usage
+
+### Directly in your code
 
 Checking if a function has a complexity of O(n) is as simple as this:
 
 ```ruby
+require 'big-o'
+
 time_complexity = BigO::TimeComplexity({
   :fn    => lambda { |n| do_something_time_consuming(n) },
   :level => lambda { |n| n }
@@ -24,6 +36,8 @@ time_complexity.process # => true if it is growing in time constantly.
 It is also possible to define multiple configuration parameters:
 
 ```ruby
+require 'big-o'
+
 space_complexity = BigO::SpaceComplexity({
   :fn => lambda { |n| do_something_space_consuming(n) }
   :level => lambda { |n| n },
@@ -35,9 +49,12 @@ space_complexity = BigO::SpaceComplexity({
 })
 ```
 
+### RSpec Matchers
+
 If you are using RSpec, there is a matcher already defined for matching a complexity level:
 
 ```ruby
+require 'big-o'
 require 'big-o-matchers'
 
 describe 'do_something_time_consuming' do
