@@ -69,7 +69,7 @@ describe 'do_something_time_consuming' do
   end
 
   it 'should not have a complexity of O(1)' do
-    @time_complexity.should match_complexity_level 'O(1)', lambda { |_| 1 }
+    @time_complexity.should_not match_complexity_level 'O(1)', lambda { |_| 1 }
   end
 end
 ```
