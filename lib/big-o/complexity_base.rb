@@ -87,7 +87,7 @@ module BigO
     # measure. In other words, any code executed within :before_hook or :after_hook will not affect
     # the time/space measure of :fn.
     #
-    # @param [Integer] iteration
+    # @param [Integer] n iteration
     # @return [Float] indicator
     def measurement(n)
       @options[:before_hook].call(n)
