@@ -3,7 +3,10 @@ module BigO
   #
   # This exception happens if the function is too slow to run, or if the timeout is too short.
   class SmallResultSetError < StandardError
+    # Sets default message.
+    #
     # @param [Integer] resultset_size number of values the result set contains.
+    # @return [SmallResultSetError]
     def initialize(resultset_size)
       super "Less than #{resultset_size} values could be retrieved." +
           " Try using longer timeout or a different range. (function complexity may be too high)"
@@ -14,6 +17,9 @@ module BigO
   #
   # To fix this error, it is possible to augment the number of times the function should run.
   class InstantaneousExecutionError < StandardError
+    # Sets default message.
+    #
+    # @return [InstantaneousExecutionError]
     def initialize
       super "Function execution time can't be quantified. (execution speed close to instantaneous)"
     end

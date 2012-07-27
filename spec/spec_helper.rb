@@ -1,3 +1,5 @@
+require 'simplecov'
+
 require 'helpers/simulation'
 require File.expand_path('../../lib/big-o.rb', __FILE__)
 require File.expand_path('../../lib/big-o-matchers.rb', __FILE__)

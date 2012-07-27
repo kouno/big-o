@@ -5,7 +5,6 @@ describe ComplexityBase do
   before :all do
     class FunctionComplexity
       include ComplexityBase
-
       def measure(*args, &b)
         1
       end
@@ -29,18 +28,24 @@ describe ComplexityBase do
       @fn_complexity.options[:approximation].should == 0.05
     end
 
-    it 'should refuse to process less than 4 values when processing a function' do
-      real_complexity     = {}
-      expected_complexity = {}
+    it 'should detect result set with less than 4 values' do
+      @fn_complexity.result_set ||= {}
       3.times do |i|
-        real_complexity[i]     = i
-        expected_complexity[i] = i
+        @fn_complexity.result_set[i] = i
       end
+      @fn_complexity.small_result_set?.should be_true
+      lambda { @fn_complexity.examine_result_set }.should raise_error(SmallResultSetError)
+    end
 
-      @fn_complexity.scale = 1
-      lambda {
-        @fn_complexity.examine_result_set(real_complexity, expected_complexity)
-      }.should raise_error(SmallResultSetError)
+    it 'should allow 5% of error in the results' do
+      @fn_complexity.result_set ||= {}
+      100.times do |i|
+        @fn_complexity.result_set[i] = i
+      end
+      5.times do
+        @fn_complexity.allow_inconsistency?.should be_true
+      end
+      @fn_complexity.allow_inconsistency?.should be_false
     end
   end
 
@@ -65,7 +70,6 @@ describe ComplexityBase do
           :level => lambda { |_| 1},
           :before_hook => @before_hook,
           :after_hook => @after_hook })
-
     end
 
     it 'should be called every time we try to match a complexity level' do

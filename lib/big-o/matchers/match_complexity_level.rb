@@ -25,8 +25,4 @@ RSpec::Matchers.define :match_complexity_level do |o_notation, complexity_level|
         "avg: #{total / result_set.size} " +
         "total values: #{result_set.size} on #{complexity.options[:range]}"
   end
-
-  description do
-    "should match complexity level #{o_notation}"
-  end
 end

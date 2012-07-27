@@ -18,16 +18,15 @@ module BigO
     #
     # @param [Hash] options the options necessary to benchmark the given lambda. Any of these options
     #               can be defined just before running a simulation using <code>options</code>.
-    #
-    #     {
-    #        :fn => lambda { |n| do_something(n) }  # function which will be measured [required]
-    #        :level => lambda { |n| n }             # complexity of the function [required]
-    #        :range => 1..20,                       # values of `n` for which it will run the function
-    #        :timeout => 10,                        # time (in seconds) after which the simulation will stop running
-    #        :approximation => 0.05,                # percentage by which we approximate our expected results
-    #        :error_pct => 0.05,                    # percentage of times where we allow errors due to concurrent processing
-    #        :minimum_result_set_size => 3          # minimum number of results we need to have consistent data
-    #      }
+    # @option options [Proc] :fn function which will be measured [required]
+    # @option options [Proc] :level complexity of the function [required]
+    # @option options [Range] :range (1..20) values of `n` for which it will run the function
+    # @option options [Numeric] :timeout (10) time (in seconds) after which the simulation will stop running
+    # @option options [Float] :approximation (0.05) percentage by which we approximate our expected results
+    # @option options [Float] :error_pct (0.05) percentage of times where we allow errors due to concurrent processing
+    # @option options [Integer] :minimum_result_set_size (3) minimum number of results we need to have consistent data
+    # @option options [Proc] :after_hook (proc {})
+    # @option options [Proc] :before_hook (proc {})
     # @return [void]
     def initialize(options = {})
       @options = { :range => 1..20,
@@ -39,6 +38,7 @@ module BigO
                    :after_hook => proc {} }
 
       @options.merge!(options)
+      @result_set = {}
     end
 
     # Benchmarks the given function (<code>@fn</code>) and tells if it follows the given pattern
@@ -47,37 +47,28 @@ module BigO
     # @return [Boolean]
     def process
       @scale ||= get_scale
-      examine_result_set(*run_simulation)
+      run_simulation
+      @result = examine_result_set
     end
 
     # Runs simulation.
     #
-    # A simulation can fail to execute every element in <code>range</code> because it exceeded the timeout limit. If no result
-    # was returned in the `timeout` time frame, this method will generate an exception.
+    # A simulation can fail to execute every element in <code>range</code> because it exceeded the timeout limit.
+    # If no result was returned in the `timeout` time frame, this method will generate an exception.
     #
-    # @return [Array] contains an array (first element) of values which are the measurement of the function
-    #                 and another array (second element) of values which are the expected values for the first one.
+    # @return [void]
     # @raise [Timeout::Error]
     def run_simulation
-      real_complexity     = {}
-      expected_complexity = {}
-
-      begin
-        Timeout::timeout(@options[:timeout]) do
-          @options[:range].each do |n|
-            next if (indicator = measurement(n)) == 0
-            real_complexity[n]     = indicator
-            expected_complexity[n] = @options[:level].call(n)
-          end
-        end
-      rescue Timeout::Error => e
-        if real_complexity.empty? || expected_complexity.empty?
-          raise e
+      Timeout::timeout(@options[:timeout]) do
+        @options[:range].each do |n|
+          next if (measure = measurement(n)) == 0
+          @result_set[n] = measure
         end
       end
-
-      @result_set = real_complexity
-      [real_complexity, expected_complexity]
+    rescue Timeout::Error => e
+      if @result_set.empty?
+        raise e
+      end
     end
 
     # Measurement process.
@@ -91,9 +82,9 @@ module BigO
     # @return [Float] indicator
     def measurement(n)
       @options[:before_hook].call(n)
-      indicator = measure(n, &@options[:fn])
+      measure = measure(n, &@options[:fn])
       @options[:after_hook].call(n)
-      indicator
+      measure
     end
 
     # Parses data from <code>#run_simulation</code>.
@@ -101,46 +92,79 @@ module BigO
     # <code>examine_result_set</code> will return true only if these conditions are met:
     # - expected complexity is never exceeded. Some inconsistencies may however be allowed
     #   (see <code>@options[:error_pct]</code>).
-    # - there is a minimum of X results in real_complexity, where X is <code>@options[:minimum_result_set_size]</code>.
-    #   if this condition is not met, an exception will be thrown.
     #
-    # @param [Array] real_complexity
-    # @param [Array] expected_complexity
     # @return [Boolean]
     # @raise [SmallResultSetError]
-    def examine_result_set(real_complexity, expected_complexity)
-      if real_complexity.size <= @options[:minimum_result_set_size]
+    def examine_result_set
+      if small_result_set?
         raise SmallResultSetError.new(@options[:minimum_result_set_size])
       end
 
-      allowed_inconsistencies = (expected_complexity.size * @options[:error_pct]).floor
-      expected_complexity.each do |n, level|
-        next if n == 1
-        estimated_complexity  = @scale * level
-        estimated_complexity += estimated_complexity * @options[:approximation]
-        if estimated_complexity <= real_complexity[n]
-          if allowed_inconsistencies > 0
-            allowed_inconsistencies -= 1
+      @result_set.each do |n, measure|
+        next if n == 1 # scale was taken from n == 1, no need to compare this value
+        if maximum_complexity(n) <= measure
+          if allow_inconsistency?
             next
+          else
+            return false
           end
-          @result = false
-          break
         end
       end
 
-      @result = true if @result.nil?
-      @result
+      true
     end
 
-    # Finds what is the first measure of our function.
+    # Maximum complexity depending on n.
     #
-    # @return [Float]
+    # For O(n**2), if n == 5 the "maximum complexity" would be 25.
+    # including an approximation of 5%, it would be 25 + 1.25.
+    #
+    # @param [Integer] n
+    # @return [Float] maximum complexity
+    def maximum_complexity(n)
+      estimated_complexity = @scale * @options[:level].call(n)
+      estimated_complexity + (estimated_complexity * @options[:approximation])
+    end
+
+    # Should an inconsistency be allowed considering the size of the result set?
+    #
+    # @return [Boolean]
+    def allow_inconsistency?
+      @allowed_inconsistencies ||= (@result_set.size * @options[:error_pct]).floor
+      if @allowed_inconsistencies > 0
+        @allowed_inconsistencies -= 1
+        true
+      else
+        false
+      end
+    end
+
+    # Does the result set contain less than the required number of element ?
+    #
+    # @return [Boolean]
+    def small_result_set?
+      @result_set.size <= @options[:minimum_result_set_size]
+    end
+
+    # Finds what is the first measure of our function. (n == 1)
+    #
+    # @return [Numeric]
     def get_scale
       runs = []
       10.times do
         runs << measure(1, &@options[:fn])
       end
       runs.inject(:+) / 10
+    end
+
+    # Measures the given block.
+    #
+    # This method should be re-implemented on any class which includes ComplexityBase.
+    #
+    # @yield [*args] function which needs to be measured
+    # @return [Numeric] measurement
+    def measure(*args, &b)
+
     end
   end
 end
