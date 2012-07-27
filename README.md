@@ -45,7 +45,9 @@ space_complexity = BigO::SpaceComplexity({
   :timeout => 10,                 # time in seconds
   :approximation => 0.05,         # percentage
   :error_pct => 0.05,             # percentage
-  :minimum_result_set_size => 3   # minimum results
+  :minimum_result_set_size => 3,  # minimum results
+  :after_hook => proc { },        # See before/after hooks
+  :before_hook => proc { }
 })
 ```
 
@@ -60,7 +62,7 @@ require 'big-o-matchers'
 describe 'do_something_time_consuming' do
   before :each do
     @time_complexity = BigO::TimeComplexity({
-      :fn    => lambda { |n| do_something_time_consuming(n) }
+      :fn => lambda { |n| do_something_time_consuming(n) }
     })
   end
 
@@ -76,6 +78,28 @@ end
 
 The string used as the first parameter (e.g. `'O(n)'`) is used to describe the lambda given as the
 second parameter.
+
+### After/Before hooks
+
+Your function depends on something which needs to run before every call of your function? You need to
+cleanup whatever dirty work your function performed? These operation are time/space consuming and they will
+affect the values of your function? Well, just throw these things in the before/after hooks!
+
+```ruby
+time_complexity = BigO::TimeComplexity({
+  :fn    => lambda { |_| whatever_action_which_doesnt_depend_on_n },
+  :level => lambda { |n| n**2 },
+  :before_hook => lambda { |n| prepare_fn_environment(n) },
+  :after_hook => lambda { |n| clean_up(n) }
+})
+time_complexity.process # will only time :fn
+```
+
+Warning: The timeout is still in effect during before and after hooks execution (in our example, it may stop
+during clean_up). There should not be any sensitive code which needs to be executed in before/after hooks.
+
+If you need to cleanup something after `time_complexity.process`, you will prefer to place this code out of :after_hook 
+or :before_hook.
 
 ## Reference
 

@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'big-o'
-  s.version     = '0.1'
-  s.date        = '2012-07-25'
+  s.version     = '0.1.1'
+  s.date        = '2012-07-27'
   s.summary     = "Calculate function complexity (using Big O notation)"
   s.description = "Big-O is a gem which analyse an anonymous function and verify that it " +
       "follow a specific pattern in its memory usage or its execution time."
