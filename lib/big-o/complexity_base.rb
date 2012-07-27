@@ -34,7 +34,9 @@ module BigO
                    :timeout => 10,
                    :approximation => 0.05,
                    :error_pct => 0.05,
-                   :minimum_result_set_size => 3 }
+                   :minimum_result_set_size => 3,
+                   :before_hook => proc {},
+                   :after_hook => proc {} }
 
       @options.merge!(options)
     end
@@ -63,7 +65,7 @@ module BigO
       begin
         Timeout::timeout(@options[:timeout]) do
           @options[:range].each do |n|
-            next if (indicator = measure(n, &@options[:fn])) == 0
+            next if (indicator = measurement(n)) == 0
             real_complexity[n]     = indicator
             expected_complexity[n] = @options[:level].call(n)
           end
@@ -76,6 +78,22 @@ module BigO
 
       @result_set = real_complexity
       [real_complexity, expected_complexity]
+    end
+
+    # Measurement process.
+    #
+    # Composed of the measurement itself and executing two hooks :before_hook and :after_hook.
+    # Due to the structure of the measurement, the hooks are not (and should not) be part of the
+    # measure. In other words, any code executed within :before_hook or :after_hook will not affect
+    # the time/space measure of :fn.
+    #
+    # @param [Integer] iteration
+    # @return [Float] indicator
+    def measurement(n)
+      @options[:before_hook].call(n)
+      indicator = measure(n, &@options[:fn])
+      @options[:after_hook].call(n)
+      indicator
     end
 
     # Parses data from <code>#run_simulation</code>.

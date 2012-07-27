@@ -12,6 +12,14 @@ describe SpaceComplexity do
     lambda { @space_complexity.process }.should raise_error(Timeout::Error)
   end
 
+  it 'should ignore whatever is happening in a before/after hook' do
+    @space_complexity.options[:fn] = lambda { |_| simulate_memory_space(1024) }
+    @space_complexity.options[:before_hook] = lambda { |n| simulate_memory_space(1024 * n) }
+    @space_complexity.options[:after_hook] = lambda { |n| simulate_memory_space(1024 * n) }
+    @space_complexity.options[:approximation] = 0.2
+    @space_complexity.should match_complexity_level 'O(1)', lambda { |_| 1 }
+  end
+
   describe '#process on complexity O(1)' do
     before :each do
       @space_complexity.options[:fn] = lambda { |_| simulate_memory_space(1024) }
@@ -35,7 +43,6 @@ describe SpaceComplexity do
     it 'should return false if the complexity does not match (too low)' do
       @space_complexity.should_not match_complexity_level 'O(1)', lambda { |_| 1 }
     end
-
   end
 
   describe '#process on complexity O(n**2)' do

@@ -6,7 +6,7 @@ describe ComplexityBase do
     class FunctionComplexity
       include ComplexityBase
 
-      def measure
+      def measure(*args, &b)
         1
       end
     end
@@ -53,6 +53,25 @@ describe ComplexityBase do
     it 'should have the configured values' do
       @fn_complexity.options[:timeout].should == 1
       @fn_complexity.options[:approximation].should == 0.1
+    end
+  end
+
+  describe 'before/after hooks' do
+    before :each do
+      @after_hook    = double('lambda')
+      @before_hook   = double('lambda')
+      @fn_complexity = FunctionComplexity.new({
+          :fn => lambda { |_| 1 },
+          :level => lambda { |_| 1},
+          :before_hook => @before_hook,
+          :after_hook => @after_hook })
+
+    end
+
+    it 'should be called every time we try to match a complexity level' do
+      @before_hook.should_receive(:call).with(kind_of(Integer)).at_most(20).times
+      @after_hook.should_receive(:call).with(kind_of(Integer)).at_most(20).times
+      @fn_complexity.process
     end
   end
 end
