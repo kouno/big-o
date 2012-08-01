@@ -61,7 +61,7 @@ module BigO
     def run_simulation
       Timeout::timeout(@options[:timeout]) do
         @options[:range].each do |n|
-          next if (measure = measurement(n)) == 0
+          next if (measure = measurement(n)) <= 0
           @result_set[n] = measure
         end
       end

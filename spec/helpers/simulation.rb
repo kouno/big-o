@@ -6,7 +6,7 @@ module BigO
       t0 = Process.times
       begin
         t1 = Process.times
-      end while (t1.utime - t0.utime) < seconds
+      end while (BigDecimal.new(t1.utime.to_s) - BigDecimal.new(t0.utime.to_s)) < BigDecimal.new(seconds.to_s)
     end
 
     def simulate_memory_space(ko)

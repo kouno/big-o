@@ -7,7 +7,7 @@ describe TimeComplexity do
   end
 
   MIN_TIME = 0.01
-  AVG_TIME = 0.05
+  AVG_TIME = 0.02
 
   it 'should raise an exception if timeout is reached and no result was found' do
     @time_complexity.options[:timeout] = 0.001
@@ -61,7 +61,7 @@ describe TimeComplexity do
     end
   end
 
-  describe 'very small execution time functions (0.1 second and below)' do
+  describe 'very small execution time functions (0.01 second and below)' do
     it 'should still be valid in case of O(n**2)' do
       @time_complexity.options[:fn] = lambda { |n| simulate_utime_processing(MIN_TIME * n**2) }
       @time_complexity.should     match_complexity_level 'O(n**2)',     lambda { |n| n**2 }
@@ -75,8 +75,15 @@ describe TimeComplexity do
       @time_complexity.should_not match_complexity_level 'O(1)', lambda { |_| 1 }
     end
 
-    it 'should throw an error if execution time is not measurable for n = 1 (execution time close to ~0.001 second)' do
-      @time_complexity.options[:fn] = lambda { |n| 0.001 * n**2 }
+    it 'should still be valid for execution time close to ~0.001 second' do
+      @time_complexity.options[:fn]    = lambda { |n| simulate_utime_processing(BigDecimal.new('0.001') * n) }
+      @time_complexity.should     match_complexity_level 'O(n)', lambda { |n| n }
+      @time_complexity.should_not match_complexity_level 'O(1)', lambda { |_| 1 }
+    end
+
+    it 'should throw an error if execution time is not measurable for n = 1 (execution time under ~0.001 second)' do
+      # no calculation, execution time should be instant.
+      @time_complexity.options[:fn] = lambda { |_| 1 }
       lambda { @time_complexity.process }.should raise_error(InstantaneousExecutionError)
     end
   end

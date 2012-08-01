@@ -1,3 +1,5 @@
+require 'bigdecimal'
+
 module BigO
   # Measure time complexity.
   class TimeComplexity
@@ -7,8 +9,10 @@ module BigO
     #
     # @see ComplexityBase#initialize
     def initialize(options = {})
-      options = { :error_pct => 0.1 }.merge(options)
-      super(options)
+      tc_options = { :error_pct => 0.1,
+                     :scale_increase_limit => 5 }
+      @scale_increased_count = 0
+      super(tc_options.merge(options))
     end
 
     # Checks if the function can be measured and throw an error if it could not.
@@ -25,9 +29,26 @@ module BigO
     # @see ComplexityBase#measure
     def measure(*args, &b)
       t0 = Process.times
-      b.call(*args)
+      (10 ** @scale_increased_count).times do
+        b.call(*args)
+      end
       t1 = Process.times
-      t1.utime - t0.utime
+      BigDecimal.new(t1.utime.to_s) - BigDecimal.new(t0.utime.to_s)
+    end
+
+    def get_scale
+      scale = super
+      while scale < BigDecimal.new('0.1')
+        increase_scale
+        scale = super
+      end
+
+      scale
+    end
+
+    def increase_scale
+      raise InstantaneousExecutionError.new if @scale_increased_count >= @options[:scale_increase_limit]
+      @scale_increased_count += 1
     end
   end
 end
