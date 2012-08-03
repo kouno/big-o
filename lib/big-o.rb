@@ -1,5 +1,6 @@
 require 'timeout'
 require 'benchmark'
+require 'bigdecimal'
 
 require 'big-o/complexity_base'
 require 'big-o/time_complexity'

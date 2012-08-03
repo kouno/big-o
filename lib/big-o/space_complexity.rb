@@ -65,7 +65,7 @@ module BigO
 
     # @see ComplexityBase#values_to_s
     def values_to_s
-      @result_set.values.to_s
+      @result_set.values.inspect
     end
   end
 end

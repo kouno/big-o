@@ -1,5 +1,3 @@
-require 'bigdecimal'
-
 module BigO
   # Measure time complexity.
   class TimeComplexity
@@ -53,7 +51,7 @@ module BigO
 
     # @see ComplexityBase#values_to_s
     def values_to_s
-      @result_set.values.map(&:to_f).to_s
+      @result_set.values.map(&:to_f).inspect
     end
   end
 end
