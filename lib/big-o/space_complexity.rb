@@ -62,5 +62,10 @@ module BigO
     def memory_measure(pid)
       `ps -o rss= -p #{pid}`.to_i
     end
+
+    # @see ComplexityBase#values_to_s
+    def values_to_s
+      @result_set.values.to_s
+    end
   end
 end

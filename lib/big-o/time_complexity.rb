@@ -15,15 +15,6 @@ module BigO
       super(tc_options.merge(options))
     end
 
-    # Checks if the function can be measured and throw an error if it could not.
-    #
-    # @see ComplexityBase#process
-    def process
-      @scale ||= get_scale
-      raise InstantaneousExecutionError.new unless @scale > 0
-      super
-    end
-
     # Measures the execution time that <code>fn</code> is using.
     #
     # @see ComplexityBase#measure
@@ -36,9 +27,15 @@ module BigO
       BigDecimal.new(t1.utime.to_s) - BigDecimal.new(t0.utime.to_s)
     end
 
+    # Gets scale.
+    #
+    # Implement tolerance for fast executing functions. Any function executing in less than
+    # 0.01 second will be scaled up by a factor of 10.
+    #
+    # @see ComplexityBase#get_scale
     def get_scale
       scale = super
-      while scale < BigDecimal.new('0.1')
+      while scale < BigDecimal.new('0.01')
         increase_scale
         scale = super
       end
@@ -46,9 +43,17 @@ module BigO
       scale
     end
 
+    # Increases scale.
+    #
+    # @return [void]
     def increase_scale
       raise InstantaneousExecutionError.new if @scale_increased_count >= @options[:scale_increase_limit]
       @scale_increased_count += 1
+    end
+
+    # @see ComplexityBase#values_to_s
+    def values_to_s
+      @result_set.values.map(&:to_f).to_s
     end
   end
 end

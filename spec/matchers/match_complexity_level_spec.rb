@@ -24,9 +24,9 @@ describe 'match_complexity_level matcher' do
     it "should provide a descriptive error message" do
       @matcher.matches?(@test_complexity)
       @matcher.failure_message_for_should.should =~ /\Aexpected a complexity level of O\(1\)/
-      @matcher.failure_message_for_should.should =~ /got scale: [0-9.]+ min: [0-9.]+/
-      @matcher.failure_message_for_should.should =~ /max: [0-9.]+ avg: [0-9.]+/
-      @matcher.failure_message_for_should.should =~ /total values: [0-9]+ on 1\.\.20\Z/
+      @matcher.failure_message_for_should.should =~ /scale: [0-9.]+/
+      @matcher.failure_message_for_should.should =~ /\[[0-9E., ]+\]+/
+      @matcher.failure_message_for_should.should =~ /total values: [0-9]+ on 20/
     end
   end
 
@@ -38,9 +38,9 @@ describe 'match_complexity_level matcher' do
     it "should provide a descriptive error message" do
       @matcher.matches?(@test_complexity)
       @matcher.failure_message_for_should_not.should =~ /\Aexpected a complexity level over O\(n\)/
-      @matcher.failure_message_for_should_not.should =~ /got scale: [0-9.]+ min: [0-9.]+/
-      @matcher.failure_message_for_should_not.should =~ /max: [0-9.]+ avg: [0-9.]+/
-      @matcher.failure_message_for_should_not.should =~ /total values: [0-9]+ on 1\.\.20\Z/
+      @matcher.failure_message_for_should_not.should =~ /scale: [0-9E.]+/
+      @matcher.failure_message_for_should_not.should =~ /\[[0-9E., ]+\]+/
+      @matcher.failure_message_for_should_not.should =~ /total values: [0-9]+ on 20/
     end
   end
 end

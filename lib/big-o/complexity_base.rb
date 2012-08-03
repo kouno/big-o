@@ -164,7 +164,19 @@ module BigO
     # @yield [*args] function which needs to be measured
     # @return [Numeric] measurement
     def measure(*args, &b)
+    end
 
+    # Creates a descriptive string of the calculated complexity.
+    #
+    # @see Object#to_s
+    def to_s
+      "values: #{values_to_s} scale: #@scale total values: #{@result_set.size} on #{@options[:range].max}"
+    end
+
+    # Converts result set to a string.
+    #
+    # @return [String]
+    def values_to_s
     end
   end
 end

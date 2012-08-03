@@ -6,6 +6,13 @@ describe SpaceComplexity do
     @space_complexity = SpaceComplexity.new
   end
 
+  it 'should implement value_to_s' do
+    @space_complexity.result_set = { 1 => 11_000,
+                                     2 => 12_000,
+                                     3 => 13_000 }
+    @space_complexity.values_to_s.should =~ /\A\[([0-9]+, ){2}[0-9]+\]\z/
+  end
+
   it 'should raise an exception if timeout is reached and no result was found' do
     @space_complexity.options[:timeout] = 0.001
     @space_complexity.options[:fn]      = lambda { |_| simulate_memory_space(1) }
