@@ -5,9 +5,7 @@ in its memory usage or its execution time.
 
 ## Requirements
 
-Calculation of memory space is done via `ps`, and therefore, doesn't work on Windows.
-
-This gem has been tested on Mac OS X, using Ruby 1.9.3.
+This gem has been tested on Mac OS X, using Ruby 1.9.3/1.9.2.
 
 ## Install
 
@@ -38,8 +36,8 @@ It is also possible to define multiple configuration parameters:
 ```ruby
 require 'big-o'
 
-space_complexity = BigO::SpaceComplexity({
-  :fn => lambda { |n| do_something_space_consuming(n) }
+time_complexity = BigO::SpaceComplexity({
+  :fn => lambda { |n| do_something_time_consuming(n) }
   :level => lambda { |n| n },
   :range => 1..20,                # value of n
   :timeout => 10,                 # time in seconds
@@ -82,7 +80,7 @@ second parameter.
 ### After/Before hooks
 
 Your function depends on something which needs to run before every call of your function? You need to
-cleanup whatever dirty work your function performed? These operation are time/space consuming and they will
+cleanup whatever dirty work your function performed? These operation are time consuming and they will
 affect the values of your function? Well, just throw these things in the before/after hooks!
 
 ```ruby
@@ -100,6 +98,10 @@ during clean_up). There should not be any sensitive code which needs to be execu
 
 If you need to cleanup something after `time_complexity.process`, you will prefer to place this code out of :after_hook 
 or :before_hook.
+
+## Change Log
+
+* SpaceComplexity has been removed. (> 0.1)
 
 ## Reference
 
