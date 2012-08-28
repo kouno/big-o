@@ -66,10 +66,10 @@ describe ComplexityBase do
       @after_hook    = double('lambda')
       @before_hook   = double('lambda')
       @fn_complexity = FunctionComplexity.new({
-          :fn => lambda { |_| 1 },
-          :level => lambda { |_| 1},
+          :fn          => lambda { |_| 1 },
+          :level       => lambda { |_| 1},
           :before_hook => @before_hook,
-          :after_hook => @after_hook })
+          :after_hook  => @after_hook })
     end
 
     it 'should be called every time we try to match a complexity level' do
