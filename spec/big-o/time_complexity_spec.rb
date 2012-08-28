@@ -90,7 +90,7 @@ describe TimeComplexity do
 
     it 'should still be valid for execution time under <0.001 second in case of O(1)' do
       @time_complexity.options[:fn] = lambda { |_| a = 1 }
-      @time_complexity.options[:approximation] = 0.2
+      @time_complexity.options[:approximation] = 1
       @time_complexity.should match_complexity_level 'O(1)', lambda { |_| 1 }
     end
   end

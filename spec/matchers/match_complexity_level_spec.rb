@@ -3,7 +3,7 @@ include BigO
 
 describe 'match_complexity_level matcher' do
   before :each do
-    @test_complexity = SpaceComplexity.new({ :fn => lambda { |n| simulate_memory_space(1024 * n) } })
+    @test_complexity = TimeComplexity.new({ :fn => lambda { |n| simulate_utime_processing(0.01 * n) } })
   end
 
   it "should not match O(1) for a constant augmentation" do

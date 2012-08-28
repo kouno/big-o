@@ -1,10 +1,10 @@
 Gem::Specification.new do |s|
   s.name        = 'big-o'
-  s.version     = '0.1.1'
+  s.version     = '0.2.0'
   s.date        = '2012-07-27'
   s.summary     = "Calculate function complexity (using Big O notation)"
   s.description = "Big-O is a gem which analyses an anonymous function and verifies that it " +
-                  "follows a specific pattern in its memory usage or its execution time."
+                  "follows a specific pattern in its execution time."
   s.authors     = ["Vincent Bonmalais"]
   s.email       = 'vbonmalais@gmail.com'
   s.files       = `git ls-files`.split("\n")
