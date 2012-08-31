@@ -1,6 +1,6 @@
 # Big-O [![Build Status](https://secure.travis-ci.org/Kouno/big-o.png?branch=master)](http://travis-ci.org/Kouno/big-o)
 
-Big-O is a gem which analyse an anonymous function and verify that it follow a specific pattern
+Big-O is a gem which analyses an anonymous function and verifies that it follows a specific pattern
 in its memory usage or its execution time.
 
 ## Requirements
