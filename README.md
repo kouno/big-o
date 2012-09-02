@@ -9,7 +9,7 @@ This gem has been tested on Mac OS X, using Ruby 1.9.3/1.9.2.
 
 ## Install
 
-Installation is made through RubyGem:
+Installation is made through RubyGems:
 
 ```
 gem install big-o
@@ -96,7 +96,7 @@ time_complexity.process # will only time :fn
 Warning: The timeout is still in effect during before and after hooks execution (in our example, it may stop
 during clean_up). There should not be any sensitive code which needs to be executed in before/after hooks.
 
-If you need to cleanup something after `time_complexity.process`, you will prefer to place this code out of :after_hook 
+If you need to cleanup something after `time_complexity.process`, you will prefer to place this code outside of :after_hook 
 or :before_hook.
 
 ## Change Log
